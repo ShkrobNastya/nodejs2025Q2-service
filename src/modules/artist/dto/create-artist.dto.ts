@@ -1,10 +1,9 @@
-// import { IsString, MinLength } from 'class-validator';
+import { IsString, IsBoolean } from 'class-validator';
 
-// export class CreateUserDto {
-//   @IsString()
-//   login: string;
+export class CreateArtistDto {
+  @IsString()
+  name: string;
 
-//   @IsString()
-//   @MinLength(1)
-//   password: string;
-// }
+  @IsBoolean()
+  grammy: boolean;
+}

@@ -1,8 +1,6 @@
-// export class User {
-//   id: string;
-//   login: string;
-//   password: string;
-//   version: number;
-//   createdAt: number;
-//   updatedAt: number;
-// }
+export class Album {
+  id: string;
+  name: string;
+  year: number;
+  artistId: string | null;
+}

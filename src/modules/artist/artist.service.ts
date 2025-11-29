@@ -1,27 +1,48 @@
-// @Injectable()
-// export class UserService {
-//   constructor(private readonly db: MemoryDb) {}
+import { Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
+import { db } from '../../db/db';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
+import { Artist } from './entities/artist.entity';
 
-//   getAll() {
-//     return this.db.findAll('users').map((u) => this.stripPassword(u));
-//   }
+@Injectable()
+export class ArtistService {
+  getAllArtists() {
+    return db.artists;
+  }
 
-//   create(dto: CreateUserDto) {
-//     const user = new User();
-//     Object.assign(user, {
-//       id: uuid(),
-//       login: dto.login,
-//       password: dto.password,
-//       version: 1,
-//       createdAt: Date.now(),
-//       updatedAt: Date.now(),
-//     });
-//     this.db.create('users', user);
-//     return this.stripPassword(user);
-//   }
+  getArtistById(id: string) {
+    const artist = db.artists.find((artist) => artist.id === id);
+    if (!artist) return null;
+    return artist;
+  }
 
-//   private stripPassword(user) {
-//     const { password, ...rest } = user;
-//     return rest;
-//   }
-// }
+  createArtist(body: CreateArtistDto) {
+    const newArtist: Artist = {
+      id: uuid(),
+      name: body.name,
+      grammy: body.grammy,
+    };
+
+    db.artists.push(newArtist);
+    return newArtist;
+  }
+
+  updateArtistInfo(id: string, body: UpdateArtistDto) {
+    const artist = db.artists.find((artist) => artist.id === id);
+    if (!artist) return null;
+
+    artist.name = body.name ?? artist.name;
+    artist.grammy = body.grammy ?? artist.grammy;
+
+    return artist;
+  }
+
+  deleteArtist(id: string) {
+    const index = db.artists.findIndex((artist) => artist.id === id);
+    if (index === -1) return false;
+
+    db.artists.splice(index, 1);
+    return true;
+  }
+}
