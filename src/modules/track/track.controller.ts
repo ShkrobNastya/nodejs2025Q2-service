@@ -6,6 +6,9 @@ import {
   Put,
   Delete,
   Param,
+  NotFoundException,
+  HttpCode,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -21,8 +24,12 @@ export class TrackController {
   }
 
   @Get('/:id')
-  getTrackById(@Param('id') id: string) {
-    return this.trackService.getTrackById(id);
+  getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = this.trackService.getTrackById(id);
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
+    return track;
   }
 
   @Post()
@@ -31,12 +38,23 @@ export class TrackController {
   }
 
   @Put('/:id')
-  updateTrackInfo(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
-    return this.trackService.updateTrackInfo(id, dto);
+  updateTrackInfo(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateTrackDto,
+  ) {
+    const result = this.trackService.updateTrackInfo(id, dto);
+    if (!result) {
+      throw new NotFoundException('Artist not found');
+    }
+    return result;
   }
 
   @Delete('/:id')
-  deleteTrack(@Param('id') id: string) {
-    return this.trackService.deleteTrack(id);
+  @HttpCode(204)
+  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = this.trackService.deleteTrack(id);
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
   }
 }

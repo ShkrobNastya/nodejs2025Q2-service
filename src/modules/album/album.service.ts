@@ -44,7 +44,11 @@ export class AlbumService {
   deleteAlbum(id: string) {
     const index = db.albums.findIndex((album) => album.id === id);
     if (index === -1) return false;
-
+    db.tracks.forEach((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+    });
     db.albums.splice(index, 1);
     return true;
   }

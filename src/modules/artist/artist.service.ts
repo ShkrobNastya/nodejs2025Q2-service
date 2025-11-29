@@ -42,6 +42,18 @@ export class ArtistService {
     const index = db.artists.findIndex((artist) => artist.id === id);
     if (index === -1) return false;
 
+    db.tracks.forEach((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+      }
+    });
+
+    db.albums.forEach((album) => {
+      if (album.artistId === id) {
+        album.artistId = null;
+      }
+    });
+
     db.artists.splice(index, 1);
     return true;
   }

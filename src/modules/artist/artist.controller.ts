@@ -6,6 +6,9 @@ import {
   Put,
   Delete,
   Param,
+  NotFoundException,
+  ParseUUIDPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -21,8 +24,12 @@ export class ArtistController {
   }
 
   @Get('/:id')
-  getArtistById(@Param('id') id: string) {
-    return this.artistService.getArtistById(id);
+  getArtistById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const artist = this.artistService.getArtistById(id);
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+    return artist;
   }
 
   @Post()
@@ -31,12 +38,23 @@ export class ArtistController {
   }
 
   @Put('/:id')
-  updateArtistInfo(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
-    return this.artistService.updateArtistInfo(id, dto);
+  updateArtistInfo(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateArtistDto,
+  ) {
+    const result = this.artistService.updateArtistInfo(id, dto);
+    if (!result) {
+      throw new NotFoundException('Artist not found');
+    }
+    return result;
   }
 
   @Delete('/:id')
-  deleteArtist(@Param('id') id: string) {
-    return this.artistService.deleteArtist(id);
+  @HttpCode(204)
+  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    const artist = this.artistService.deleteArtist(id);
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
   }
 }
