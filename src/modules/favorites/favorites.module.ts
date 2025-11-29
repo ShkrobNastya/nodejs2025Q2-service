@@ -1,12 +1,9 @@
-// import { Module } from '@nestjs/common';
-// import { UserController } from './album.controller';
-// import { UserService } from './album.service';
-// import { MemoryDbModule } from '../../database/memory-db.module';
+import { Module } from '@nestjs/common';
+import { FavoritesController } from './favorites.controller';
+import { FavoritesService } from './favorites.service';
 
-// @Module({
-//   imports: [MemoryDbModule], // подключаем общий in-memory storage
-//   controllers: [UserController], // REST endpoints
-//   providers: [UserService], // бизнес-логика
-//   exports: [UserService], // экспортируем при необходимости (например, favorites)
-// })
-// export class UserModule {}
+@Module({
+  controllers: [FavoritesController],
+  providers: [FavoritesService],
+})
+export class FavoritesModule {}
