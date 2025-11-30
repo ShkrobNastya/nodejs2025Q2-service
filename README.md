@@ -17,6 +17,8 @@ git clone {repository URL}
 npm install
 ```
 
+## Add .env file (using example .env.example)
+
 ## Running application
 
 ```
@@ -28,6 +30,8 @@ in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
+
+**⚠️ Attention:**: ***To run tests you need running server in another terminal:***
 
 After application running open new terminal and enter:
 
