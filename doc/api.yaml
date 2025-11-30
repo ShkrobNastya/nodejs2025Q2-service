@@ -324,7 +324,6 @@ paths:
           description: Old password is wrong
         404:
           description: User not found
-
     delete:
       tags:
         - User

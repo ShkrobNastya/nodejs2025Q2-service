@@ -18,6 +18,7 @@ import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 import { UserDto } from './dto/user.dto';
 
 @Controller('user')
+@Serialize(UserDto)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -36,13 +37,11 @@ export class UserController {
   }
 
   @Post()
-  @Serialize(UserDto)
   createUser(@Body() dto: CreateUserDto) {
     return this.userService.createUser(dto);
   }
 
   @Put('/:id')
-  @Serialize(UserDto)
   updatePassword(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePasswordDto,
