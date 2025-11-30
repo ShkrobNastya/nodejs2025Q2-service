@@ -44,7 +44,7 @@ export class TrackController {
   ) {
     const result = this.trackService.updateTrackInfo(id, dto);
     if (!result) {
-      throw new NotFoundException('Artist not found');
+      throw new NotFoundException('Track not found');
     }
     return result;
   }

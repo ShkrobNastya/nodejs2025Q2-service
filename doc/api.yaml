@@ -321,7 +321,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         403:
-          description: oldPassword is wrong
+          description: Old password is wrong
         404:
           description: User not found
 
@@ -418,7 +418,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Track was not found.
+          description: Track not found
     put:
       tags:
         - Track
@@ -482,7 +482,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Track was not found.
+          description: Track not found
     delete:
       tags:
         - Track
@@ -496,7 +496,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Track was not found.
+          description: Track not found
   /album:
     get:
       tags:
@@ -574,7 +574,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Album was not found.
+          description: Album not found
     put:
       tags:
         - Album
@@ -611,7 +611,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Album was not found.
+          description: Album not found
     delete:
       tags:
         - Album
@@ -625,7 +625,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Album was not found.
+          description: Album not found
   /artist:
     get:
       tags:
@@ -698,7 +698,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Artist was not found.
+          description: Artist not found
     put:
       tags:
         - Artist
@@ -730,7 +730,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Artist was not found.
+          description: Artist not found
     delete:
       tags:
         - Artist
@@ -744,7 +744,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Artist was not found.
+          description: Artist not found
   /favs:
     get:
       tags:
@@ -775,13 +775,21 @@ paths:
       description: Add track to the favorites
       responses:
         201:
-          description: Added successfully
+          description: Track added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Track added to favorites successfully"
         400:
-          description: Bad. trackId is invalid (not uuid)
+          description: Bad request. trackId is invalid (not uuid)
         401:
           $ref: '#/components/responses/UnauthorizedError'
         422:
-          description: Track with id doesn't exist.
+          description: Track does not exist
     delete:
       tags:
         - Favorites
@@ -791,11 +799,12 @@ paths:
         204:
           description: Deleted successfully
         400:
-          description: Bad. trackId is invalid (not uuid)
+          description: Bad request. trackId is invalid (not uuid)
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Track was not found.
+          description: Track not found
+
   /favs/album/{id}:
     parameters:
       - name: id
@@ -811,13 +820,21 @@ paths:
       description: Add album to the favorites
       responses:
         201:
-          description: Added successfully
+          description: Album added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Album added to favorites successfully"
         400:
-          description: Bad. albumId is invalid (not uuid)
+          description: Bad request. albumId is invalid (not uuid)
         401:
           $ref: '#/components/responses/UnauthorizedError'
         422:
-          description: Album with id doesn't exist.
+          description: Album does not exist
     delete:
       tags:
         - Favorites
@@ -827,11 +844,12 @@ paths:
         204:
           description: Deleted successfully
         400:
-          description: Bad. albumId is invalid (not uuid)
+          description: Bad request. albumId is invalid (not uuid)
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Album was not found.
+          description: Album not found
+
   /favs/artist/{id}:
     parameters:
       - name: id
@@ -847,13 +865,21 @@ paths:
       description: Add artist to the favorites
       responses:
         201:
-          description: Added successfully
+          description: Artist added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Artist added to favorites successfully"
         400:
           description: Bad request. artistId is invalid (not uuid)
         401:
           $ref: '#/components/responses/UnauthorizedError'
         422:
-          description: Artist with id doesn't exist.
+          description: Artist does not exist
     delete:
       tags:
         - Favorites
@@ -867,4 +893,4 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Artist was not found.
+          description: Artist not found
