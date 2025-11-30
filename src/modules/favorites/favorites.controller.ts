@@ -28,7 +28,7 @@ export class FavoritesController {
       throw new UnprocessableEntityException('Track does not exist');
     }
 
-    return result;
+    return { message: 'Track added to favorites successfully' };
   }
 
   @Delete('/track/:id')
@@ -49,7 +49,7 @@ export class FavoritesController {
       throw new UnprocessableEntityException('Album does not exist');
     }
 
-    return result;
+    return { message: 'Album added to favorites successfully' };
   }
 
   @Delete('/album/:id')
@@ -70,7 +70,7 @@ export class FavoritesController {
       throw new UnprocessableEntityException('Artist does not exist');
     }
 
-    return result;
+    return { message: 'Artist added to favorites successfully' };
   }
 
   @Delete('/artist/:id')
