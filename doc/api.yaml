@@ -447,9 +447,6 @@ paths:
                   type: string
                   format: uuid
                   nullable: true
-              required:
-                - name
-                - duration
       responses:
         200:
           description: The track has been updated.
@@ -596,9 +593,6 @@ paths:
                   type: string
                   format: uuid
                   nullable: true
-              required:
-                - name
-                - year
       responses:
         200:
           description: The album has been updated.
@@ -715,9 +709,6 @@ paths:
                   type: string
                 grammy:
                   type: boolean
-              required:
-                - name
-                - grammy
       responses:
         200:
           description: The artist has been updated.
