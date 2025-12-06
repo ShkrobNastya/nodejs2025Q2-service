@@ -20,34 +20,31 @@ export class TrackService {
   }
 
   async getTrackById(id: string) {
-    const track = await this.repo.findOne({ where: { id } });
-    if (!track) return null;
-    return track;
+    return this.repo.findOne({
+      where: { id },
+    });
   }
 
-  createTrack(body: CreateTrackDto) {
-    const trackPayload: Track = {
-      id: uuid(),
+  async createTrack(body: CreateTrackDto) {
+    const track = this.repo.create({
       name: body.name,
+      duration: body.duration,
       artistId: body.artistId ?? null,
       albumId: body.albumId ?? null,
-      duration: body.duration,
-    };
+    });
 
-    const newTrack = this.repo.create(trackPayload);
-
-    return this.repo.save(newTrack);
+    return this.repo.save(track);
   }
 
   async updateTrackInfo(id: string, body: UpdateTrackDto) {
     const track = await this.repo.findOne({ where: { id } });
     if (!track) return null;
 
-    track.name = body.name ?? track.name;
-    track.artistId =
-      body.artistId === undefined ? track.artistId : body.artistId;
-    track.albumId = body.albumId === undefined ? track.albumId : body.albumId;
-    track.duration = body.duration ?? track.duration;
+    if (body.name !== undefined) track.name = body.name;
+    if (body.duration !== undefined) track.duration = body.duration;
+
+    if (body.artistId !== undefined) track.artistId = body.artistId;
+    if (body.albumId !== undefined) track.albumId = body.albumId;
 
     return this.repo.save(track);
   }

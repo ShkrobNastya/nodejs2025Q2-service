@@ -28,8 +28,8 @@ export class UserController {
   }
 
   @Get('/:id')
-  getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.getUserById(id);
+  async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const user = await this.userService.getUserById(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }

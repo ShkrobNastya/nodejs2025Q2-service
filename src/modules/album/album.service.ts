@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v4 as uuid } from 'uuid';
-import { db } from '../../db/db';
-import { Album } from './entities/album.entity';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from 'src/db/entities/album.entity';
+import { ArtistEntity } from 'src/db/entities/artist.entity';
 
 @Injectable()
 export class AlbumService {
@@ -20,22 +18,21 @@ export class AlbumService {
   }
 
   async getAlbumById(id: string) {
-    const album = await this.repo.findOne({ where: { id } });
-    if (!album) return null;
-    return album;
+    return this.repo.findOne({ where: { id } });
   }
 
-  createAlbum(body: CreateAlbumDto) {
-    const albumPayload: Album = {
-      id: uuid(),
+  async createAlbum(body: CreateAlbumDto) {
+    const album = this.repo.create({
       name: body.name,
       year: body.year,
       artistId: body.artistId ?? null,
-    };
+    });
 
-    const newAlbum = this.repo.create(albumPayload);
+    if (body.artistId) {
+      album.artist = { id: body.artistId } as ArtistEntity;
+    }
 
-    return this.repo.save(newAlbum);
+    return this.repo.save(album);
   }
 
   async updateAlbumInfo(id: string, body: UpdateAlbumDto) {
@@ -43,22 +40,19 @@ export class AlbumService {
     if (!album) return null;
 
     album.name = body.name ?? album.name;
-    album.artistId =
-      body.artistId === undefined ? album.artistId : body.artistId;
     album.year = body.year ?? album.year;
+
+    if (body.artistId !== undefined) {
+      album.artistId = body.artistId;
+      album.artist =
+        body.artistId === null ? null : ({ id: body.artistId } as ArtistEntity);
+    }
 
     return this.repo.save(album);
   }
 
-  deleteAlbum(id: string) {
-    const index = db.albums.findIndex((album) => album.id === id);
-    if (index === -1) return false;
-    db.tracks.forEach((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
-    });
-    db.albums.splice(index, 1);
-    return true;
+  async deleteAlbum(id: string): Promise<boolean> {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }

@@ -24,8 +24,8 @@ export class TrackController {
   }
 
   @Get('/:id')
-  getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrackById(id);
+  async getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.trackService.getTrackById(id);
     if (!track) {
       throw new NotFoundException('Track not found');
     }

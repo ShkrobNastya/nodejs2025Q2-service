@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v4 as uuid } from 'uuid';
-import { db } from '../../db/db';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from './entities/artist.entity';
 import { ArtistEntity } from 'src/db/entities/artist.entity';
 
 @Injectable()
@@ -26,13 +23,10 @@ export class ArtistService {
   }
 
   createArtist(body: CreateArtistDto) {
-    const artistPayload: Artist = {
-      id: uuid(),
+    const newArtist = this.repo.create({
       name: body.name,
       grammy: body.grammy,
-    };
-
-    const newArtist = this.repo.create(artistPayload);
+    });
 
     return this.repo.save(newArtist);
   }
@@ -47,23 +41,9 @@ export class ArtistService {
     return this.repo.save(artist);
   }
 
-  deleteArtist(id: string) {
-    const index = db.artists.findIndex((artist) => artist.id === id);
-    if (index === -1) return false;
+  async deleteArtist(id: string): Promise<boolean> {
+    const result = await this.repo.delete(id);
 
-    db.tracks.forEach((track) => {
-      if (track.artistId === id) {
-        track.artistId = null;
-      }
-    });
-
-    db.albums.forEach((album) => {
-      if (album.artistId === id) {
-        album.artistId = null;
-      }
-    });
-
-    db.artists.splice(index, 1);
-    return true;
+    return result.affected > 0;
   }
 }

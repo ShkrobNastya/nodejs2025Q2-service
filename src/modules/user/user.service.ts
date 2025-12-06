@@ -26,15 +26,13 @@ export class UserService {
 
   createUser(body: CreateUserDto) {
     const currentTime = Date.now();
-    const userPayload: User = {
-      id: uuid(),
+    const newUser = this.repo.create({
       login: body.login,
       password: body.password,
       version: 1,
       createdAt: currentTime,
       updatedAt: currentTime,
-    };
-    const newUser = this.repo.create(userPayload);
+    });
 
     return this.repo.save(newUser);
   }

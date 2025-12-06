@@ -14,9 +14,21 @@ export class UserEntity {
   @Column({ default: 1 })
   version: number;
 
-  @Column()
+  @Column({
+    type: 'bigint',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => Number(value),
+    },
+  })
   createdAt: number;
 
-  @Column()
+  @Column({
+    type: 'bigint',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => Number(value),
+    },
+  })
   updatedAt: number;
 }
