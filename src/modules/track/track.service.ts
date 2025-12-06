@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuid } from 'uuid';
 import { db } from '../../db/db';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
+import { Repository } from 'typeorm';
+import { TrackEntity } from 'src/db/entities/track.entity';
 
 @Injectable()
 export class TrackService {
+  constructor(
+    @InjectRepository(TrackEntity)
+    private repo: Repository<TrackEntity>,
+  ) {}
+
   getAllTracks() {
-    return db.tracks;
+    return this.repo.find();
   }
 
-  getTrackById(id: string) {
-    const track = db.tracks.find((track) => track.id === id);
+  async getTrackById(id: string) {
+    const track = await this.repo.findOne({ where: { id } });
     if (!track) return null;
     return track;
   }
 
   createTrack(body: CreateTrackDto) {
-    const newTrack: Track = {
+    const trackPayload: Track = {
       id: uuid(),
       name: body.name,
       artistId: body.artistId ?? null,
@@ -26,12 +34,13 @@ export class TrackService {
       duration: body.duration,
     };
 
-    db.tracks.push(newTrack);
-    return newTrack;
+    const newTrack = this.repo.create(trackPayload);
+
+    return this.repo.save(newTrack);
   }
 
-  updateTrackInfo(id: string, body: UpdateTrackDto) {
-    const track = db.tracks.find((track) => track.id === id);
+  async updateTrackInfo(id: string, body: UpdateTrackDto) {
+    const track = await this.repo.findOne({ where: { id } });
     if (!track) return null;
 
     track.name = body.name ?? track.name;
@@ -40,14 +49,11 @@ export class TrackService {
     track.albumId = body.albumId === undefined ? track.albumId : body.albumId;
     track.duration = body.duration ?? track.duration;
 
-    return track;
+    return this.repo.save(track);
   }
 
-  deleteTrack(id: string) {
-    const index = db.tracks.findIndex((track) => track.id === id);
-    if (index === -1) return false;
-
-    db.tracks.splice(index, 1);
-    return true;
+  async deleteTrack(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }

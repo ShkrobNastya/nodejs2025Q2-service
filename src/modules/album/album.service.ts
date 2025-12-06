@@ -1,36 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { db } from '../../db/db';
 import { Album } from './entities/album.entity';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from 'src/db/entities/album.entity';
 
 @Injectable()
 export class AlbumService {
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private repo: Repository<AlbumEntity>,
+  ) {}
+
   getAllAlbums() {
-    return db.albums;
+    return this.repo.find();
   }
 
-  getAlbumById(id: string) {
-    const album = db.albums.find((album) => album.id === id);
+  async getAlbumById(id: string) {
+    const album = await this.repo.findOne({ where: { id } });
     if (!album) return null;
     return album;
   }
 
   createAlbum(body: CreateAlbumDto) {
-    const newAlbum: Album = {
+    const albumPayload: Album = {
       id: uuid(),
       name: body.name,
       year: body.year,
       artistId: body.artistId ?? null,
     };
 
-    db.albums.push(newAlbum);
-    return newAlbum;
+    const newAlbum = this.repo.create(albumPayload);
+
+    return this.repo.save(newAlbum);
   }
 
-  updateAlbumInfo(id: string, body: UpdateAlbumDto) {
-    const album = db.albums.find((album) => album.id === id);
+  async updateAlbumInfo(id: string, body: UpdateAlbumDto) {
+    const album = await this.repo.findOne({ where: { id } });
     if (!album) return null;
 
     album.name = body.name ?? album.name;
@@ -38,7 +47,7 @@ export class AlbumService {
       body.artistId === undefined ? album.artistId : body.artistId;
     album.year = body.year ?? album.year;
 
-    return album;
+    return this.repo.save(album);
   }
 
   deleteAlbum(id: string) {

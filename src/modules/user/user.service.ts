@@ -5,11 +5,11 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import {UserEntity } from '../../db/entities/user.entity';
+import { UserEntity } from '../../db/entities/user.entity';
 
 @Injectable()
 export class UserService {
-    constructor(
+  constructor(
     @InjectRepository(UserEntity)
     private repo: Repository<UserEntity>,
   ) {}

@@ -9,6 +9,9 @@ import { AlbumModule } from './modules/album/album.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './db/entities/user.entity';
+import { TrackEntity } from './db/entities/track.entity';
+import { ArtistEntity } from './db/entities/artist.entity';
+import { AlbumEntity } from './db/entities/album.entity';
 
 @Module({
   imports: [
@@ -24,7 +27,7 @@ import { UserEntity } from './db/entities/user.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DB,
-      entities: [UserEntity],
+      entities: [UserEntity, TrackEntity, ArtistEntity, AlbumEntity],
       synchronize: true,
     }),
   ],

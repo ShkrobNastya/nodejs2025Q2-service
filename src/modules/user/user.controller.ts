@@ -58,8 +58,8 @@ export class UserController {
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.deleteUser(id);
+  async deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
+    const user = await this.userService.deleteUser(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
