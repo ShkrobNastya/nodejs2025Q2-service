@@ -74,3 +74,21 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+### Docker
+
+```
+docker build -t rustlingg/db:latest ./src/db
+```
+
+```
+docker build -t rustlingg/myapp:latest ./
+```
+
+```
+docker-compose up -d
+```
+
+```
+docker-compose build
+```
