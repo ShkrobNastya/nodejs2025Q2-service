@@ -4,27 +4,36 @@ services:
   postgres:
     build: ./src/db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "17017:5432"
+      - "${POSTGRES_PORT}:5432"
     networks:
       - appnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
     environment:
-      DB_HOST: postgres
-      DB_USER: user
-      DB_PASS: root
-      DB_NAME: db
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_DB: ${DATABASE_DB}
+      PORT: ${PORT}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
-      - "4000:4000"
+      - "${APP_PORT}:${PORT}"
     networks:
       - appnet
+    restart: on-failure
 
 networks:
   appnet:
