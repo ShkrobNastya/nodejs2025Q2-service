@@ -1,5 +1,9 @@
+import { ArtistEntity } from '../../../db/entities/artist.entity';
+import { AlbumEntity } from '../../../db/entities/album.entity';
+import { TrackEntity } from '../../../db/entities/track.entity';
+
 export class Favorites {
-  artists: string[];
-  albums: string[];
-  tracks: string[];
+  artists: ArtistEntity[];
+  albums: AlbumEntity[];
+  tracks: TrackEntity[];
 }
