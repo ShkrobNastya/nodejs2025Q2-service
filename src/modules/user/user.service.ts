@@ -1,25 +1,32 @@
-import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuid } from 'uuid';
-import { db } from '../../db/db';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import {UserEntity } from '../../db/entities/user.entity';
 
 @Injectable()
 export class UserService {
+    constructor(
+    @InjectRepository(UserEntity)
+    private repo: Repository<UserEntity>,
+  ) {}
+
   getAllUsers() {
-    return db.users;
+    return this.repo.find();
   }
 
-  getUserById(id: string) {
-    const user = db.users.find((user) => user.id === id);
+  async getUserById(id: string) {
+    const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
     return user;
   }
 
   createUser(body: CreateUserDto) {
     const currentTime = Date.now();
-    const newUser: User = {
+    const userPayload: User = {
       id: uuid(),
       login: body.login,
       password: body.password,
@@ -27,13 +34,13 @@ export class UserService {
       createdAt: currentTime,
       updatedAt: currentTime,
     };
-    db.users.push(newUser);
+    const newUser = this.repo.create(userPayload);
 
-    return newUser;
+    return this.repo.save(newUser);
   }
 
-  updatePassword(id: string, body: UpdatePasswordDto) {
-    const user = db.users.find((user) => user.id === id);
+  async updatePassword(id: string, body: UpdatePasswordDto) {
+    const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
 
     if (user.password !== body.oldPassword) {
@@ -44,14 +51,11 @@ export class UserService {
     user.version += 1;
     user.updatedAt = Date.now();
 
-    return user;
+    return this.repo.save(user);
   }
 
-  deleteUser(id: string) {
-    const index = db.users.findIndex((user) => user.id === id);
-    if (index === -1) return false;
-
-    db.users.splice(index, 1);
-    return true;
+  async deleteUser(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }

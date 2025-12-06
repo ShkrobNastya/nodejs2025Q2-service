@@ -42,11 +42,11 @@ export class UserController {
   }
 
   @Put('/:id')
-  updatePassword(
+  async updatePassword(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePasswordDto,
   ) {
-    const result = this.userService.updatePassword(id, dto);
+    const result = await this.userService.updatePassword(id, dto);
     if (!result) {
       throw new NotFoundException('User not found');
     }

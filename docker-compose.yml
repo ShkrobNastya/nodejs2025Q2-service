@@ -5,7 +5,7 @@ services:
     build: ./src/db
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_PASSWORD: root
       POSTGRES_DB: db
     ports:
       - "17017:5432"
@@ -17,7 +17,7 @@ services:
     environment:
       DB_HOST: postgres
       DB_USER: user
-      DB_PASS: pass
+      DB_PASS: root
       DB_NAME: db
     depends_on:
       - postgres
