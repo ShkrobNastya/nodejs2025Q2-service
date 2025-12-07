@@ -77,22 +77,54 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
 ### Docker
 
+Builds the PostgreSQL image from the Dockerfile located in src/db.
+
 ```
 docker build -t rustlingg/db:latest ./src/db
 ```
+
+Builds the application image from the project’s root directory.
 
 ```
 docker build -t rustlingg/myapp:latest ./
 ```
 
+Starts all services defined in docker-compose.yml in detached mode.
+
 ```
 docker-compose up -d
 ```
+
+Stops and removes running containers and networks.
 
 ```
 docker-compose down
 ```
 
+Rebuilds all images defined in the compose file.do
+
 ```
 docker-compose build
+```
+For more information: https://docs.docker.com/
+
+### Project setup
+
+1.Clone repo
+
+```
+git clone https://github.com/your/repo.git
+```
+
+2. Add .env file
+
+3.Build project
+
+```
+docker-compose build
+```
+4.Start project
+
+```
+docker-compose up -d
 ```

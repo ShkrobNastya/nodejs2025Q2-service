@@ -1,4 +1,4 @@
-FROM postgres:16
+FROM postgres:16-alpine
 
 ENV POSTGRES_USER=user
 ENV POSTGRES_PASSWORD=root
