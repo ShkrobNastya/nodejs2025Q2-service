@@ -16,9 +16,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_logs:/var/log/postgresql
 
   app:
     build: .
+    command: ["npm", "run", "start:dev"]
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules  
     environment:
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
@@ -38,3 +46,7 @@ services:
 networks:
   appnet:
     driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_logs:
