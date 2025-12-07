@@ -24,8 +24,8 @@ export class AlbumController {
   }
 
   @Get('/:id')
-  getAlbumById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const album = this.albumService.getAlbumById(id);
+  async getAlbumById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const album = await this.albumService.getAlbumById(id);
     if (!album) {
       throw new NotFoundException('Album not found');
     }
@@ -38,11 +38,11 @@ export class AlbumController {
   }
 
   @Put('/:id')
-  updateAlbumInfo(
+  async updateAlbumInfo(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateAlbumDto,
   ) {
-    const result = this.albumService.updateAlbumInfo(id, dto);
+    const result = await this.albumService.updateAlbumInfo(id, dto);
     if (!result) {
       throw new NotFoundException('Album not found');
     }
@@ -51,8 +51,8 @@ export class AlbumController {
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    const album = this.albumService.deleteAlbum(id);
+  async deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    const album = await this.albumService.deleteAlbum(id);
     if (!album) {
       throw new NotFoundException('Album not found');
     }

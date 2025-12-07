@@ -28,8 +28,8 @@ export class UserController {
   }
 
   @Get('/:id')
-  getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.getUserById(id);
+  async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const user = await this.userService.getUserById(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -42,11 +42,11 @@ export class UserController {
   }
 
   @Put('/:id')
-  updatePassword(
+  async updatePassword(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePasswordDto,
   ) {
-    const result = this.userService.updatePassword(id, dto);
+    const result = await this.userService.updatePassword(id, dto);
     if (!result) {
       throw new NotFoundException('User not found');
     }
@@ -58,8 +58,8 @@ export class UserController {
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.deleteUser(id);
+  async deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
+    const user = await this.userService.deleteUser(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }

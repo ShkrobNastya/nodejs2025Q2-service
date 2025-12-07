@@ -24,8 +24,8 @@ export class TrackController {
   }
 
   @Get('/:id')
-  getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrackById(id);
+  async getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.trackService.getTrackById(id);
     if (!track) {
       throw new NotFoundException('Track not found');
     }
@@ -38,11 +38,11 @@ export class TrackController {
   }
 
   @Put('/:id')
-  updateTrackInfo(
+  async updateTrackInfo(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateTrackDto,
   ) {
-    const result = this.trackService.updateTrackInfo(id, dto);
+    const result = await this.trackService.updateTrackInfo(id, dto);
     if (!result) {
       throw new NotFoundException('Track not found');
     }
@@ -51,8 +51,8 @@ export class TrackController {
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.deleteTrack(id);
+  async deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.trackService.deleteTrack(id);
     if (!track) {
       throw new NotFoundException('Track not found');
     }

@@ -1,73 +1,129 @@
 import { Injectable } from '@nestjs/common';
-import { db } from '../../db/db';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FavoritesEntity } from '../../db/entities/favourites.entity';
+import { ArtistEntity } from '../../db/entities/artist.entity';
+import { AlbumEntity } from '../../db/entities/album.entity';
+import { TrackEntity } from '../../db/entities/track.entity';
 
 @Injectable()
 export class FavoritesService {
-  getAllFavorites() {
+  constructor(
+    @InjectRepository(FavoritesEntity)
+    private favoritesRepo: Repository<FavoritesEntity>,
+    @InjectRepository(ArtistEntity)
+    private artistRepo: Repository<ArtistEntity>,
+    @InjectRepository(AlbumEntity)
+    private albumRepo: Repository<AlbumEntity>,
+    @InjectRepository(TrackEntity)
+    private trackRepo: Repository<TrackEntity>,
+  ) {}
+
+  private async getFavorites(): Promise<FavoritesEntity> {
+    let favorites = await this.favoritesRepo.findOne({
+      where: {},
+      relations: ['artists', 'albums', 'tracks'],
+    });
+
+    if (!favorites) {
+      favorites = this.favoritesRepo.create({
+        artists: [],
+        albums: [],
+        tracks: [],
+      });
+      favorites = await this.favoritesRepo.save(favorites);
+    }
+
+    return favorites;
+  }
+
+  async getAllFavorites() {
+    const favorites = await this.getFavorites();
     return {
-      artists: db.favorites.artists
-        .map((id) => db.artists.find((artist) => artist.id === id))
-        .filter(Boolean),
-      albums: db.favorites.albums
-        .map((id) => db.albums.find((album) => album.id === id))
-        .filter(Boolean),
-      tracks: db.favorites.tracks
-        .map((id) => db.tracks.find((track) => track.id === id))
-        .filter(Boolean),
+      artists: favorites.artists || [],
+      albums: favorites.albums || [],
+      tracks: favorites.tracks || [],
     };
   }
 
-  addTrackToFavorites(id: string) {
-    const track = db.tracks.find((track) => track.id === id);
+  async addTrackToFavorites(id: string) {
+    const track = await this.trackRepo.findOne({ where: { id } });
     if (!track) return false;
 
-    if (!db.favorites.tracks.includes(id)) {
-      db.favorites.tracks.push(id);
+    const favorites = await this.getFavorites();
+
+    if (!favorites.tracks.some((track) => track.id === id)) {
+      favorites.tracks.push(track);
+      await this.favoritesRepo.save(favorites);
     }
     return true;
   }
 
-  deleteTrackFromFavorites(id: string) {
-    const index = db.favorites.tracks.indexOf(id);
-    if (index === -1) return false;
+  async deleteTrackFromFavorites(id: string) {
+    const favorites = await this.getFavorites();
+    const length = favorites.tracks.length;
 
-    db.favorites.tracks.splice(index, 1);
+    favorites.tracks = favorites.tracks.filter((track) => track.id !== id);
+
+    if (favorites.tracks.length === length) {
+      return false;
+    }
+
+    await this.favoritesRepo.save(favorites);
     return true;
   }
 
-  addAlbumToFavorites(id: string) {
-    const album = db.albums.find((album) => album.id === id);
+  async addAlbumToFavorites(id: string) {
+    const album = await this.albumRepo.findOne({ where: { id } });
     if (!album) return false;
 
-    if (!db.favorites.albums.includes(id)) {
-      db.favorites.albums.push(id);
+    const favorites = await this.getFavorites();
+
+    if (!favorites.albums.some((album) => album.id === id)) {
+      favorites.albums.push(album);
+      await this.favoritesRepo.save(favorites);
     }
     return true;
   }
 
-  deleteAlbumFromFavorites(id: string) {
-    const index = db.favorites.albums.indexOf(id);
-    if (index === -1) return false;
+  async deleteAlbumFromFavorites(id: string) {
+    const favorites = await this.getFavorites();
+    const length = favorites.albums.length;
 
-    db.favorites.albums.splice(index, 1);
+    favorites.albums = favorites.albums.filter((album) => album.id !== id);
+
+    if (favorites.albums.length === length) {
+      return false;
+    }
+
+    await this.favoritesRepo.save(favorites);
     return true;
   }
 
-  addArtistToFavorites(id: string) {
-    const artist = db.artists.find((artist) => artist.id === id);
+  async addArtistToFavorites(id: string) {
+    const artist = await this.artistRepo.findOne({ where: { id } });
     if (!artist) return false;
 
-    if (!db.favorites.artists.includes(id)) {
-      db.favorites.artists.push(id);
+    const favorites = await this.getFavorites();
+
+    if (!favorites.artists.some((artist) => artist.id === id)) {
+      favorites.artists.push(artist);
+      await this.favoritesRepo.save(favorites);
     }
     return true;
   }
 
-  deleteArtistFromFavorites(id: string) {
-    const index = db.favorites.artists.indexOf(id);
-    if (index === -1) return false;
+  async deleteArtistFromFavorites(id: string) {
+    const favorites = await this.getFavorites();
+    const length = favorites.artists.length;
 
-    db.favorites.artists.splice(index, 1);
+    favorites.artists = favorites.artists.filter((artist) => artist.id !== id);
+
+    if (favorites.artists.length === length) {
+      return false;
+    }
+
+    await this.favoritesRepo.save(favorites);
     return true;
   }
 }

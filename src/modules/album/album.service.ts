@@ -1,55 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { db } from '../../db/db';
-import { Album } from './entities/album.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from 'src/db/entities/album.entity';
+import { ArtistEntity } from 'src/db/entities/artist.entity';
 
 @Injectable()
 export class AlbumService {
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private repo: Repository<AlbumEntity>,
+  ) {}
+
   getAllAlbums() {
-    return db.albums;
+    return this.repo.find();
   }
 
-  getAlbumById(id: string) {
-    const album = db.albums.find((album) => album.id === id);
-    if (!album) return null;
-    return album;
+  async getAlbumById(id: string) {
+    return this.repo.findOne({ where: { id } });
   }
 
-  createAlbum(body: CreateAlbumDto) {
-    const newAlbum: Album = {
-      id: uuid(),
+  async createAlbum(body: CreateAlbumDto) {
+    const album = this.repo.create({
       name: body.name,
       year: body.year,
       artistId: body.artistId ?? null,
-    };
+    });
 
-    db.albums.push(newAlbum);
-    return newAlbum;
+    if (body.artistId) {
+      album.artist = { id: body.artistId } as ArtistEntity;
+    }
+
+    return this.repo.save(album);
   }
 
-  updateAlbumInfo(id: string, body: UpdateAlbumDto) {
-    const album = db.albums.find((album) => album.id === id);
+  async updateAlbumInfo(id: string, body: UpdateAlbumDto) {
+    const album = await this.repo.findOne({ where: { id } });
     if (!album) return null;
 
     album.name = body.name ?? album.name;
-    album.artistId =
-      body.artistId === undefined ? album.artistId : body.artistId;
     album.year = body.year ?? album.year;
 
-    return album;
+    if (body.artistId !== undefined) {
+      album.artistId = body.artistId;
+      album.artist =
+        body.artistId === null ? null : ({ id: body.artistId } as ArtistEntity);
+    }
+
+    return this.repo.save(album);
   }
 
-  deleteAlbum(id: string) {
-    const index = db.albums.findIndex((album) => album.id === id);
-    if (index === -1) return false;
-    db.tracks.forEach((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
-    });
-    db.albums.splice(index, 1);
-    return true;
+  async deleteAlbum(id: string): Promise<boolean> {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }
