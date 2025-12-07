@@ -8,11 +8,7 @@ import { ArtistModule } from './modules/artist/artist.module';
 import { AlbumModule } from './modules/album/album.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './db/entities/user.entity';
-import { TrackEntity } from './db/entities/track.entity';
-import { ArtistEntity } from './db/entities/artist.entity';
-import { AlbumEntity } from './db/entities/album.entity';
-import { FavoritesEntity } from './db/entities/favourites.entity';
+import { AppDataSource } from './data-source';
 
 @Module({
   imports: [
@@ -21,22 +17,7 @@ import { FavoritesEntity } from './db/entities/favourites.entity';
     ArtistModule,
     AlbumModule,
     FavoritesModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_HOST,
-      port: Number(process.env.DATABASE_PORT),
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_DB,
-      entities: [
-        UserEntity,
-        TrackEntity,
-        ArtistEntity,
-        AlbumEntity,
-        FavoritesEntity,
-      ],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(AppDataSource.options),
   ],
   controllers: [AppController],
   providers: [
