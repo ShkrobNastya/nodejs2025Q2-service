@@ -108,6 +108,16 @@ docker-compose build
 ```
 For more information: https://docs.docker.com/
 
+### Script for vulnerabilities scanning 
+
+```
+npm run audit
+```
+
+```
+npm run audit:fix
+```
+
 ### Project setup
 
 1.Clone repo
@@ -116,7 +126,7 @@ For more information: https://docs.docker.com/
 git clone https://github.com/your/repo.git
 ```
 
-2. Add .env file
+2.Add .env file
 
 3.Build project
 
