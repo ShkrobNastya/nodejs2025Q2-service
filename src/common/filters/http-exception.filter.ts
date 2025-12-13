@@ -9,7 +9,7 @@ import { LoggingService } from '../services/logging.service';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(private readonly logger: LoggingService) {}
+  constructor(private readonly loggerService: LoggingService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    this.logger.log(
+    this.loggerService.log(
       `[${new Date().toISOString()}] ` +
         `Error: ${req.method} ${req.url} | status: ${status} | error: ${exception instanceof Error ? exception.stack : exception}`,
     );

@@ -4,6 +4,7 @@ import * as YAML from 'yamljs';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AppDataSource } from './data-source';
+import { LoggingService } from './common/services/logging.service';
 
 async function bootstrap() {
   dotenv.config();
@@ -18,6 +19,17 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule);
+
+  const loggerService = app.get(LoggingService);
+
+  process.on('uncaughtException', (err) => {
+    loggerService.log(`uncaughtException: ${err.stack}`);
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    loggerService.log(`unhandledRejection: ${reason}`);
+  });
 
   const port = process.env.PORT || 4000;
 
