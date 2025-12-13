@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { LoggingService } from '../services/logging.service';
+import { LoggingLevel } from '../helpers/enums';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -21,7 +22,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    this.loggerService.log(
+    this.loggerService.logMessage(
+      LoggingLevel.ERROR,
       `[${new Date().toISOString()}] ` +
         `Error: ${req.method} ${req.url} | status: ${status} | error: ${exception instanceof Error ? exception.stack : exception}`,
     );

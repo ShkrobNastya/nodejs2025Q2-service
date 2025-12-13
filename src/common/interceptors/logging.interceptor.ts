@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { LoggingService } from './../services/logging.service';
+import { LoggingLevel } from '../helpers/enums';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -25,9 +26,9 @@ export class LoggingInterceptor implements NestInterceptor {
           `Incoming url: ${req.method} ${req.url} | query: ${JSON.stringify(
             req.query,
           )} | body: ${JSON.stringify(req.body)} | status: ${res.statusCode} ` +
-          ` ${duration}ms\n`;
+          ` ${duration}ms`;
 
-        this.loggerService.log(message);
+        this.loggerService.logMessage(LoggingLevel.LOG, message);
       }),
     );
   }

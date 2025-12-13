@@ -5,6 +5,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AppDataSource } from './data-source';
 import { LoggingService } from './common/services/logging.service';
+import { LoggingLevel } from './common/helpers/enums';
 
 async function bootstrap() {
   dotenv.config();
@@ -23,12 +24,18 @@ async function bootstrap() {
   const loggerService = app.get(LoggingService);
 
   process.on('uncaughtException', (err) => {
-    loggerService.log(`uncaughtException: ${err.stack}`);
+    loggerService.logMessage(
+      LoggingLevel.ERROR,
+      `uncaughtException: ${err.stack}`,
+    );
     process.exit(1);
   });
 
   process.on('unhandledRejection', (reason) => {
-    loggerService.log(`unhandledRejection: ${reason}`);
+    loggerService.logMessage(
+      LoggingLevel.ERROR,
+      `unhandledRejection: ${reason}`,
+    );
   });
 
   const port = process.env.PORT || 4000;
