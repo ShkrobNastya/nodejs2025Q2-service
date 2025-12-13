@@ -22,6 +22,12 @@ export class UserService {
     return user;
   }
 
+  async getUserByLogin(login: string) {
+    const user = await this.repo.findOne({ where: { login } });
+    if (!user) return null;
+    return user;
+  }
+
   createUser(body: CreateUserDto) {
     const currentTime = Date.now();
     const newUser = this.repo.create({
