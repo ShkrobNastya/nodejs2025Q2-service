@@ -31,7 +31,7 @@ export class AuthController {
   @Post('refresh')
   async refresh(@Body() dto: RefreshDto) {
     const result = await this.authService.refresh(dto);
-    if (result !== 'Invalid or expired refresh token') {
+    if (result === 'Invalid or expired refresh token') {
       throw new ForbiddenException('Invalid or expired refresh token');
     }
   }
