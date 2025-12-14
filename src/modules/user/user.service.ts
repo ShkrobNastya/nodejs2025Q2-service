@@ -4,9 +4,12 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../db/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  private readonly saltRounds = Number(process.env.CRYPT_SALT) || 10;
+
   constructor(
     @InjectRepository(UserEntity)
     private repo: Repository<UserEntity>,
@@ -22,11 +25,18 @@ export class UserService {
     return user;
   }
 
-  createUser(body: CreateUserDto) {
+  async getUserByLogin(login: string) {
+    const user = await this.repo.findOne({ where: { login } });
+    if (!user) return null;
+    return user;
+  }
+
+  async createUser(body: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(body.password, this.saltRounds);
     const currentTime = Date.now();
     const newUser = this.repo.create({
       login: body.login,
-      password: body.password,
+      password: hashedPassword,
       version: 1,
       createdAt: currentTime,
       updatedAt: currentTime,
@@ -39,11 +49,14 @@ export class UserService {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
 
-    if (user.password !== body.oldPassword) {
+    console.log(body.oldPassword, user.password);
+    const match = await bcrypt.compare(body.oldPassword, user.password);
+
+    if (!match) {
       return 'Wrong password';
     }
 
-    user.password = body.newPassword;
+    user.password = await bcrypt.hash(body.newPassword, this.saltRounds);
     user.version += 1;
     user.updatedAt = Date.now();
 
